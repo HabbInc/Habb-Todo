@@ -31,10 +31,17 @@ const AddTask = () => {
       <form onSubmit={handleSubmit}>
         <input
           type="text"
-          value={task}
+          value={Title}
           onChange={(e) => setTask(e.target.value)}
           placeholder="Enter your task"
         />
+        <input
+          type="text"
+          value={Description}
+          onChange={(e) => setTask(e.target.value)}
+          placeholder="Enter Description (optional)"
+        />
+        
         <button type="submit">Add</button>
       </form>
     </div>

@@ -4,8 +4,9 @@ const Task = require('./model/task');
 const task = require('./model/task');
 
 const cors = require('cors');
-app.use(cors());
+
 const app = express();
+app.use(cors());
 const PORT = process.env.PORT || 3000;
 
 // Middleware
