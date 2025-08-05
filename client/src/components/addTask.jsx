@@ -1,26 +1,34 @@
-
 import { useState } from 'react';
 
 const AddTask = () => {
-  const [task, setTask] = useState('');
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Send the task to the server
-    fetch('/api/add-task', {
+
+    // Basic validation
+    if (title.trim() === '') {
+      alert('Title is required');
+      return;
+    }
+
+    // Send task to the server
+    fetch('http://localhost:3000/api/addtask', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ task }),
+      body: JSON.stringify({ title, description }),
     })
-      .then(response => response.json())
-      .then(data => {
+      .then((response) => response.json())
+      .then((data) => {
         console.log('Task added:', data);
-        // Clear the input field
-        setTask('');
+        // Clear input fields
+        setTitle('');
+        setDescription('');
       })
-      .catch(error => {
+      .catch((error) => {
         console.error('Error adding task:', error);
       });
   };
@@ -31,17 +39,16 @@ const AddTask = () => {
       <form onSubmit={handleSubmit}>
         <input
           type="text"
-          value={Title}
-          onChange={(e) => setTask(e.target.value)}
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
           placeholder="Enter your task"
         />
         <input
           type="text"
-          value={Description}
-          onChange={(e) => setTask(e.target.value)}
-          placeholder="Enter Description (optional)"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          placeholder="Enter description (optional)"
         />
-        
         <button type="submit">Add</button>
       </form>
     </div>

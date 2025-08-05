@@ -1,23 +1,18 @@
 const mongoose = require('mongoose');
 
-// Define a schema for the task
 const taskSchema = new mongoose.Schema({
-    title: {
-        type: String,
-        required: true,
-    },
-    description: {
-        type: String,
-        required: true,
-    },
-    completed: {
-        type: Boolean,
-        default: false,
-    },  
-    createdAt: {
-        type: Date,
-        default: Date.now,
-    },
+  title: {
+    type: String,
+    required: true
+  },
+  description: {
+    type: String,
+    default: ''
+  },
+  completed: {
+    type: Boolean,
+    default: false
+  }
 });
 
 module.exports = mongoose.model('Task', taskSchema);

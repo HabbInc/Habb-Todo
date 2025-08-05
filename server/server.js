@@ -1,7 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const Task = require('./model/task'); 
-const task = require('./model/task');
 
 const cors = require('cors');
 
@@ -30,11 +29,29 @@ app.get('/api/alltasks', async(req, res) => {
     try {
        const tasks = await Task.find({});
         res.json(tasks);
-       
     } catch (error) {
         console.error('Error in /api/alltasks:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
+});
+
+app.post('/api/addtask', async (req, res) => {
+  const { title } = req.body;
+  if (!title || title.trim() === '') {
+    return res.status(400).json({ error: 'Task title is required' });
+  }
+  try {
+    const newTask = new Task({
+      title: title.trim(),
+      description: '',
+      completed: false
+    });
+    await newTask.save();
+    res.status(201).json(newTask);
+  } catch (error) {
+    console.error('Error adding task:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
 });
 
 
