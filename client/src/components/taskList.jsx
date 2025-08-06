@@ -12,7 +12,10 @@ import {
   CircularProgress,
   Switch,
   FormControlLabel,
+  Button,
+  IconButton,
 } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 const TaskList = () => {
   const [tasks, setTasks] = useState([]);
@@ -38,19 +41,32 @@ const TaskList = () => {
       });
   }, []);
 
-  // Toggle task completion status
+
   const onToggleComplete = (taskId, currentStatus) => {
     const updatedTasks = tasks.map((task) =>
       task._id === taskId ? { ...task, completed: !currentStatus } : task
     );
     setTasks(updatedTasks);
 
-    // Optionally update in DB
-    fetch(`http://localhost:3000/api/update-task-status/${taskId}`, {
+    fetch(`http://localhost:3000/api/updatetask/${taskId}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ completed: !currentStatus }),
-    }).catch((err) => console.error('Failed to update task status:', err));
+    }).catch((err) => {
+      console.error('Failed to update task status:', err);
+      setTasks(tasks);
+    });
+  };
+
+  const onDeleteTask = (taskId) => {
+    const updatedTasks = tasks.filter((task) => task._id !== taskId);
+    setTasks(updatedTasks);
+
+    fetch(`http://localhost:3000/api/deletetask/${taskId}`, {
+      method: 'DELETE',
+    }).catch((err) => {
+      console.error('Failed to delete task:', err);
+      setTasks(tasks);
+    });
   };
 
   return (
@@ -68,7 +84,7 @@ const TaskList = () => {
           📝 Your Tasks
         </Typography>
         <Typography variant="subtitle1" color="text.secondary">
-          Toggle task status using the switch
+          Toggle task status and delete tasks
         </Typography>
 
         {loading ? (
@@ -89,7 +105,7 @@ const TaskList = () => {
                   <ListItem
                     alignItems="flex-start"
                     secondaryAction={
-                      <>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                         <FormControlLabel
                           control={
                             <Switch
@@ -100,17 +116,27 @@ const TaskList = () => {
                           }
                           label={task.completed ? 'Completed' : 'Pending'}
                         />
-                        <button
-                          onClick={() => onToggleComplete(task._id, task.completed)}
-                          style={{ marginLeft: '10px' }}
+                        <IconButton
+                          color="error"
+                          onClick={() => onDeleteTask(task._id)}
+                          sx={{ ml: 1 }}
                         >
-                          {task.completed ? 'Undo' : 'Complete'}
-                        </button>
-                      </>
+                          <DeleteIcon />
+                        </IconButton>
+                      </Box>
                     }
                   >
                     <ListItemText
-                      primary={task.title}
+                      primary={
+                        <Typography
+                          sx={{
+                            textDecoration: task.completed ? 'line-through' : 'none',
+                            color: task.completed ? 'text.secondary' : 'text.primary',
+                          }}
+                        >
+                          {task.title}
+                        </Typography>
+                      }
                       secondary={task.description}
                     />
                   </ListItem>
