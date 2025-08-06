@@ -1,19 +1,32 @@
 import { useState } from 'react';
+import {
+  Container,
+  Typography,
+  TextField,
+  Button,
+  Paper,
+  Stack,
+  Alert,
+  Snackbar,
+} from '@mui/material';
+import AddTaskIcon from '@mui/icons-material/AddTask';
 
 const AddTask = () => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  const [successOpen, setSuccessOpen] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
     // Basic validation
     if (title.trim() === '') {
-      alert('Title is required');
+      setErrorMsg('Task title is required');
       return;
     }
 
-    // Send task to the server
+    // Send task to server
     fetch('http://localhost:3000/api/addtask', {
       method: 'POST',
       headers: {
@@ -21,37 +34,78 @@ const AddTask = () => {
       },
       body: JSON.stringify({ title, description }),
     })
-      .then((response) => response.json())
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Failed to add task');
+        }
+        return response.json();
+      })
       .then((data) => {
         console.log('Task added:', data);
-        // Clear input fields
         setTitle('');
         setDescription('');
+        setErrorMsg('');
+        setSuccessOpen(true);
       })
       .catch((error) => {
         console.error('Error adding task:', error);
+        setErrorMsg('Something went wrong. Please try again.');
       });
   };
 
   return (
-    <div>
-      <h1>Add Task</h1>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          placeholder="Enter your task"
-        />
-        <input
-          type="text"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          placeholder="Enter description (optional)"
-        />
-        <button type="submit">Add</button>
-      </form>
-    </div>
+    <Container maxWidth="sm" sx={{ mt: 15, mb: 6 }}>
+      <Paper elevation={6} sx={{ p: 5, borderRadius: 3 }}>
+        <Typography variant="h4" align="center" gutterBottom>
+          Add a New Task
+        </Typography>
+
+        <form onSubmit={handleSubmit}>
+          <Stack spacing={3}>
+            <TextField
+              label="Task Title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              fullWidth
+              required
+              error={!!errorMsg && title.trim() === ''}
+              helperText={title.trim() === '' && errorMsg ? errorMsg : ''}
+            />
+
+            <TextField
+              label="Description (optional)"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              fullWidth
+              multiline
+              rows={3}
+            />
+
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              size="large"
+              startIcon={<AddTaskIcon />}
+              sx={{ borderRadius: 2 }}
+            >
+              Add Task
+            </Button>
+          </Stack>
+        </form>
+      </Paper>
+
+      <Snackbar
+        open={successOpen}
+        autoHideDuration={3000}
+        onClose={() => setSuccessOpen(false)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert onClose={() => setSuccessOpen(false)} severity="success" sx={{ width: '100%' }}>
+          Task added successfully!
+        </Alert>
+      </Snackbar>
+    </Container>
   );
 };
 
