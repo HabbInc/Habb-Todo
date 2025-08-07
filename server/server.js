@@ -42,7 +42,6 @@ app.post('/api/addtask', async (req, res) => {
   try {
     const newTask = new Task({
       title: title.trim(),
-      description: '',
       completed: false
     });
     await newTask.save();
