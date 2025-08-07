@@ -1,17 +1,18 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const Task = require('./model/task'); 
-
 const cors = require('cors');
+const Task = require('./model/task');
+require('dotenv').config();
 
 const app = express();
 app.use(cors());
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5000;
 
 // Middleware
-app.use(express.json()); 
+app.use(express.json());
 
-mongoose.connect('mongodb://localhost:27017/mydatabase', {
+// Connect to MongoDB
+mongoose.connect(process.env.MONGO_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true
 }).then(() => {
@@ -21,9 +22,7 @@ mongoose.connect('mongodb://localhost:27017/mydatabase', {
 });
 
 // Routes
-app.get('/', (req, res) => {
-    res.send('Hello, World!');
-});
+app.use('/api/auth', require('./routes/auth'));
 
 app.get('/api/alltasks', async(req, res) => {
     try {
@@ -54,7 +53,6 @@ app.post('/api/addtask', async (req, res) => {
   }
 });
 
-// Delete task endpoint
 app.delete('/api/deletetask/:id', async (req, res) => {
   const { id } = req.params;
   try {
@@ -69,7 +67,6 @@ app.delete('/api/deletetask/:id', async (req, res) => {
   }
 });
 
-// Update task completion status endpoint
 app.put('/api/updatetask/:id', async (req, res) => {
   const { id } = req.params;
   try {
@@ -78,7 +75,6 @@ app.put('/api/updatetask/:id', async (req, res) => {
       return res.status(404).json({ error: 'Task not found' });
     }
     
-    // Toggle the completed status (true to false, false to true)
     task.completed = !task.completed;
     await task.save();
     
@@ -88,7 +84,6 @@ app.put('/api/updatetask/:id', async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
-
 
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);

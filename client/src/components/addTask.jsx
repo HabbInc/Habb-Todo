@@ -1,111 +1,89 @@
 import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   Container,
   Typography,
-  TextField,
   Button,
   Paper,
-  Stack,
-  Alert,
-  Snackbar,
+  TextField,
+  Box,
+  Fade,
 } from '@mui/material';
-import AddTaskIcon from '@mui/icons-material/AddTask';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import AddIcon from '@mui/icons-material/Add';
+import axios from 'axios';
 
 const AddTask = () => {
   const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [successOpen, setSuccessOpen] = useState(false);
-  const [errorMsg, setErrorMsg] = useState('');
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const onAddTask = (e) => {
     e.preventDefault();
-
-    // Basic validation
-    if (title.trim() === '') {
-      setErrorMsg('Task title is required');
+    if (!title.trim()) {
+      setError('Task title is required.');
       return;
     }
 
-    // Send task to server
-    fetch('http://localhost:3000/api/addtask', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ title, description }),
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error('Failed to add task');
-        }
-        return response.json();
+    axios.post('http://localhost:5000/api/addtask', { title })
+      .then(() => {
+        navigate('/');
       })
-      .then((data) => {
-        console.log('Task added:', data);
-        setTitle('');
-        setDescription('');
-        setErrorMsg('');
-        setSuccessOpen(true);
-      })
-      .catch((error) => {
-        console.error('Error adding task:', error);
-        setErrorMsg('Something went wrong. Please try again.');
+      .catch((err) => {
+        console.error('Failed to add task:', err);
+        setError('Failed to add task. Please try again.');
       });
   };
 
   return (
-    <Container maxWidth="sm" sx={{ mt: 15, mb: 6 }}>
-      <Paper elevation={6} sx={{ p: 5, borderRadius: 3 }}>
-        <Typography variant="h4" align="center" gutterBottom>
-          Add a New Task
-        </Typography>
+    <Fade in timeout={1000}>
+      <Container maxWidth="sm" sx={{ mt: 10, mb: 4 }}>
+        <Paper
+          elevation={8}
+          sx={{
+            p: { xs: 3, sm: 6 },
+            borderRadius: 4,
+            background: '#ffffffcc',
+            backdropFilter: 'blur(10px)',
+          }}
+        >
+          <Box sx={{ display: 'flex', alignItems: 'center', mb: 4 }}>
+            <Link to="/" style={{ textDecoration: 'none', color: 'inherit' }}>
+              <Button startIcon={<ArrowBackIcon />}>Back to Tasks</Button>
+            </Link>
+          </Box>
 
-        <form onSubmit={handleSubmit}>
-          <Stack spacing={3}>
+          <Typography variant="h4" align="center" gutterBottom>
+            🚀 Add a New Task
+          </Typography>
+          <Typography variant="subtitle1" align="center" color="text.secondary" sx={{ mb: 4 }}>
+            What do you need to get done?
+          </Typography>
+
+          <form onSubmit={onAddTask}>
             <TextField
               label="Task Title"
+              variant="outlined"
+              fullWidth
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              fullWidth
-              required
-              error={!!errorMsg && title.trim() === ''}
-              helperText={title.trim() === '' && errorMsg ? errorMsg : ''}
+              error={!!error}
+              helperText={error}
+              sx={{ mb: 3 }}
             />
-
-            <TextField
-              label="Description (optional)"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              fullWidth
-              multiline
-              rows={3}
-            />
-
             <Button
               type="submit"
               variant="contained"
-              color="primary"
               size="large"
-              startIcon={<AddTaskIcon />}
-              sx={{ borderRadius: 2 }}
+              fullWidth
+              startIcon={<AddIcon />}
             >
               Add Task
             </Button>
-          </Stack>
-        </form>
-      </Paper>
-
-      <Snackbar
-        open={successOpen}
-        autoHideDuration={3000}
-        onClose={() => setSuccessOpen(false)}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-      >
-        <Alert onClose={() => setSuccessOpen(false)} severity="success" sx={{ width: '100%' }}>
-          Task added successfully!
-        </Alert>
-      </Snackbar>
-    </Container>
+          </form>
+        </Paper>
+      </Container>
+    </Fade>
   );
 };
 

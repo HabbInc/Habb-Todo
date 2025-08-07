@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import {
   Container,
   Typography,
@@ -16,6 +17,7 @@ import {
   IconButton,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
+import AddTaskIcon from '@mui/icons-material/AddTask';
 
 const TaskList = () => {
   const [tasks, setTasks] = useState([]);
@@ -23,7 +25,7 @@ const TaskList = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('http://localhost:3000/api/alltasks')
+    fetch('http://localhost:5000/api/alltasks')
       .then((response) => {
         if (!response.ok) {
           throw new Error('Network response was not ok');
@@ -48,7 +50,7 @@ const TaskList = () => {
     );
     setTasks(updatedTasks);
 
-    fetch(`http://localhost:3000/api/updatetask/${taskId}`, {
+    fetch(`http://localhost:5000/api/updatetask/${taskId}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
     }).catch((err) => {
@@ -61,12 +63,17 @@ const TaskList = () => {
     const updatedTasks = tasks.filter((task) => task._id !== taskId);
     setTasks(updatedTasks);
 
-    fetch(`http://localhost:3000/api/deletetask/${taskId}`, {
+    fetch(`http://localhost:5000/api/deletetask/${taskId}`, {
       method: 'DELETE',
     }).catch((err) => {
       console.error('Failed to delete task:', err);
       setTasks(tasks);
     });
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    window.location.href = '/login';
   };
 
   return (
@@ -86,6 +93,16 @@ const TaskList = () => {
         <Typography variant="subtitle1" color="text.secondary">
           Toggle task status and delete tasks
         </Typography>
+        <Stack direction="row" spacing={2} justifyContent="center" sx={{ mb: 2 }}>
+          <Button variant="contained" color="error" onClick={handleLogout}>
+            Logout
+          </Button>
+          <Link to="/add-task" style={{ textDecoration: 'none' }}>
+            <Button variant="contained" startIcon={<AddTaskIcon />}>
+              Add Task
+            </Button>
+          </Link>
+        </Stack>
 
         {loading ? (
           <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
