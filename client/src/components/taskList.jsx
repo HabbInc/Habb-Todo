@@ -15,14 +15,19 @@ import {
   FormControlLabel,
   Button,
   IconButton,
+  TextField,
+  InputAdornment,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddTaskIcon from '@mui/icons-material/AddTask';
+import SearchIcon from '@mui/icons-material/Search';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 const TaskList = () => {
   const [tasks, setTasks] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState('');
 
   useEffect(() => {
     fetch('http://localhost:5000/api/alltasks')
@@ -71,6 +76,16 @@ const TaskList = () => {
     });
   };
 
+  // Filter tasks by search term (title or description)
+  const filteredTasks = tasks.filter((task) => {
+    if (!search.trim()) return true;
+    const q = search.toLowerCase();
+    return (
+      (task.title || '').toLowerCase().includes(q) ||
+      (task.description || '').toLowerCase().includes(q)
+    );
+  });
+
   const handleLogout = () => {
     localStorage.removeItem('token');
     window.location.href = '/login';
@@ -87,13 +102,34 @@ const TaskList = () => {
           background: '#d8d8d8ff',
         }}
       >
-        <Typography variant="h4" gutterBottom>
-          📝 Your Tasks
-        </Typography>
+        <Stack direction="row" spacing={2} justifyContent="center" sx={{  }}>
+          <Typography variant="h4" gutterBottom>
+            📝 Your Tasks
+          </Typography>
+          <Link to="/profile" style={{ textDecoration: 'none' , color: 'inherit' ,size: 'large'}}>
+            <AccountCircleIcon fontSize="large" />
+          </Link>
+        </Stack>  
         <Typography variant="subtitle1" color="text.secondary">
           Toggle task status and delete tasks
         </Typography>
-        <Stack direction="row" spacing={2} justifyContent="center" sx={{ mb: 2 }}>
+        <TextField
+            size="small"
+            placeholder="Search tasks..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon />
+                </InputAdornment>
+              ),
+            }}
+            sx={{ minWidth: 260,mt:4} }
+          />
+        <Stack direction="row" spacing={2} justifyContent="center" sx={{ mb: 2, mt:4   }}>
+          
+          
           <Button variant="contained" color="error" onClick={handleLogout}>
             Logout
           </Button>
@@ -114,10 +150,12 @@ const TaskList = () => {
           </Typography>
         ) : tasks.length === 0 ? (
           <Typography sx={{ mt: 2 }}>No tasks found.</Typography>
+        ) : filteredTasks.length === 0 ? (
+          <Typography sx={{ mt: 2 }}>No matching tasks.</Typography>
         ) : (
           <Paper elevation={4} sx={{ p: 3, mt: 4 }}>
             <List>
-              {tasks.map((task, index) => (
+              {filteredTasks.map((task, index) => (
                 <Box key={task._id}>
                   <ListItem
                     alignItems="flex-start"
@@ -157,7 +195,7 @@ const TaskList = () => {
                       secondary={task.description}
                     />
                   </ListItem>
-                  {index !== tasks.length - 1 && <Divider />}
+                  {index !== filteredTasks.length - 1 && <Divider />}
                 </Box>
               ))}
             </List>

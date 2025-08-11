@@ -9,7 +9,9 @@ app.use(cors());
 const PORT = process.env.PORT || 5000;
 
 // Middleware
-app.use(express.json());
+// Increase body size limits to support base64 image uploads
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI, {
@@ -83,6 +85,7 @@ app.put('/api/updatetask/:id', async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+
 
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
