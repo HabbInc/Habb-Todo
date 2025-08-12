@@ -2,11 +2,52 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const Task = require('./model/task');
+const session = require('express-session');
+const passport = require('passport');
+const jwt = require('jsonwebtoken');
 require('dotenv').config();
+require('./passportConfig');
 
 const app = express();
 app.use(cors());
 const PORT = process.env.PORT || 5000;
+const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5173';
+
+
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'dev_session_secret',
+    resave: false,
+    saveUninitialized: true
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Google OAuth route
+app.get('/auth/google',
+    passport.authenticate('google', { scope: ['profile', 'email'] })
+);
+
+app.get('/auth/google/callback',
+    passport.authenticate('google', { failureRedirect: '/' }),
+    (req, res) => {
+    // Issue JWT and redirect to frontend with token
+    try {
+      const user = req.user;
+      const token = jwt.sign(
+        { user: { id: user.id } },
+        process.env.JWT_SECRET,
+        { expiresIn: '1h' }
+      );
+  res.redirect(`${FRONTEND_URL}/login?token=${token}`);
+    } catch (e) {
+      console.error('OAuth callback error:', e);
+      res.redirect(`${FRONTEND_URL}?error=oauth_failed`);
+    }
+    }
+);
+
+
 
 // Middleware
 // Increase body size limits to support base64 image uploads
@@ -25,6 +66,7 @@ mongoose.connect(process.env.MONGO_URI, {
 
 // Routes
 app.use('/api/auth', require('./routes/auth'));
+app.use('/api/user', require('./routes/user'));
 
 app.get('/api/alltasks', async(req, res) => {
     try {

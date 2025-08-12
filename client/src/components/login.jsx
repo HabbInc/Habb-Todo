@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import {
   Container,
@@ -12,6 +12,7 @@ import {
 } from '@mui/material';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import GoogleIcon from '@mui/icons-material/Google';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -37,9 +38,24 @@ const Login = () => {
       localStorage.setItem('email', email);
       window.location.href = '/';
     } catch (err) {
-      setError(err.response.data.msg);
+      setError(err?.response?.data?.msg || 'Login failed');
     }
   };
+  const googleLogin = () => {
+        window.location.href = "http://localhost:5000/auth/google";
+    };
+
+  // If redirected back from Google with ?token=..., store it and go home
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const t = params.get('token');
+    if (t) {
+      localStorage.setItem('token', t);
+      // Clean query string
+      window.history.replaceState(null, '', window.location.pathname);
+      window.location.href = '/';
+    }
+  }, []);
 
   return (
     <Container maxWidth="sm">
@@ -94,11 +110,42 @@ const Login = () => {
             Login
           </Button>
         </Box>
+         <Button
+      variant="contained"
+      startIcon={<GoogleIcon />}
+      onClick={googleLogin}
+      sx={{
+        backgroundColor: "#DB4437",
+        "&:hover": {
+          backgroundColor: "#C33D2E",
+          
+        },
+        marginTop: 2,
+        width: "100%",
+        margin: "16px 0",
+        fontSize: "16px",
+        fontWeight: "bold",
+        textTransform: "none",
+        borderRadius: "8px",
+
+        textAlign: "center",
+        display: "flex",
+        justifyContent: "center",
+        color: "white",
+        fontWeight: "bold",
+        textTransform: "none",
+        padding: "8px 16px",
+        borderRadius: "8px"
+      }}
+    >
+      Login with Google
+    </Button>
 
         <Typography variant="body2" align="center" sx={{ mt: 2 }}>
           Don't have an account? <a href="/signup">Register</a>
         </Typography>
       </Paper>
+     
     </Container>
   );
 };

@@ -130,6 +130,7 @@ router.get('/profile/:id', async (req, res) => {
 
 // Reset/Change Password
 // Body: { currentPassword, newPassword }
+
 router.put('/resetpassword/:id', async (req, res) => {
     const { id } = req.params;
     const { currentPassword, newPassword } = req.body || {};
@@ -147,7 +148,7 @@ router.put('/resetpassword/:id', async (req, res) => {
             return res.status(404).json({ msg: 'User not found' });
         }
 
-        const isMatch = await bcrypt.compare(currentPassword, user.password);
+        const isMatch = await bcrypt.compare(currentPassword, user.password); 
         if (!isMatch) {
             return res.status(400).json({ msg: 'Current password is incorrect' });
         }

@@ -145,6 +145,7 @@ const Signup = () => {
             Sign Up
           </Button>
         </Box>
+        
 
         <Typography variant="body2" align="center" sx={{ mt: 2 }}>
           Already have an account? <a href="/login">Login</a>
