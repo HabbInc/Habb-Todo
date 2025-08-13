@@ -11,11 +11,11 @@ require('./passportConfig');
 const app = express();
 app.use(cors());
 const PORT = process.env.PORT || 5000;
-const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5173';
+const FRONTEND_URL = process.env.FRONTEND_URL;
 
 
 app.use(session({
-  secret: process.env.SESSION_SECRET || 'dev_session_secret',
+  secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: true
 }));
@@ -46,8 +46,6 @@ app.get('/auth/google/callback',
     }
     }
 );
-
-
 
 // Middleware
 // Increase body size limits to support base64 image uploads

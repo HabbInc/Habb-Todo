@@ -14,7 +14,6 @@ const UserSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    // Store avatar as base64 data URL
     image: {
         type: String,
         default: ''

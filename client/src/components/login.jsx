@@ -110,36 +110,37 @@ const Login = () => {
             Login
           </Button>
         </Box>
-         <Button
-      variant="contained"
-      startIcon={<GoogleIcon />}
-      onClick={googleLogin}
-      sx={{
-        backgroundColor: "#DB4437",
-        "&:hover": {
-          backgroundColor: "#C33D2E",
-          
-        },
-        marginTop: 2,
-        width: "100%",
-        margin: "16px 0",
-        fontSize: "16px",
-        fontWeight: "bold",
-        textTransform: "none",
-        borderRadius: "8px",
 
-        textAlign: "center",
-        display: "flex",
-        justifyContent: "center",
-        color: "white",
-        fontWeight: "bold",
-        textTransform: "none",
-        padding: "8px 16px",
-        borderRadius: "8px"
-      }}
-    >
-      Login with Google
-    </Button>
+         <Button
+            variant="contained"
+            startIcon={<GoogleIcon />}
+            onClick={googleLogin}
+            sx={{
+              backgroundColor: "#DB4437",
+              "&:hover": {
+                backgroundColor: "#C33D2E",
+                
+              },
+              marginTop: 2,
+              width: "100%",
+              margin: "16px 0",
+              fontSize: "16px",
+              fontWeight: "bold",
+              textTransform: "none",
+              borderRadius: "8px",
+
+              textAlign: "center",
+              display: "flex",
+              justifyContent: "center",
+              color: "white",
+              fontWeight: "bold",
+              textTransform: "none",
+              padding: "8px 16px",
+              borderRadius: "8px"
+            }}
+          >
+            Login with Google
+          </Button>
 
         <Typography variant="body2" align="center" sx={{ mt: 2 }}>
           Don't have an account? <a href="/signup">Register</a>
