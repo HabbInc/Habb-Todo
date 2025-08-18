@@ -52,7 +52,7 @@ const Signup = () => {
     }
 
     try {
-      const res = await axios.post('http://localhost:5000/api/auth/signup', { fullName, email, password });
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/signup`, { fullName, email, password });
       localStorage.setItem('token', res.data.token);
       window.location.href = '/login';
     } catch (err) {

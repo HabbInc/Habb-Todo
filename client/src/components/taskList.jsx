@@ -30,7 +30,7 @@ const TaskList = () => {
   const [search, setSearch] = useState('');
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/alltasks')
+    fetch(`${import.meta.env.VITE_API_URL}/api/alltasks`)
       .then((response) => {
         if (!response.ok) {
           throw new Error('Network response was not ok');
@@ -55,7 +55,7 @@ const TaskList = () => {
     );
     setTasks(updatedTasks);
 
-    fetch(`http://localhost:5000/api/updatetask/${taskId}`, {
+    fetch(`${import.meta.env.VITE_API_URL}/api/updatetask/${taskId}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
     }).catch((err) => {
@@ -68,7 +68,7 @@ const TaskList = () => {
     const updatedTasks = tasks.filter((task) => task._id !== taskId);
     setTasks(updatedTasks);
 
-    fetch(`http://localhost:5000/api/deletetask/${taskId}`, {
+    fetch(`${import.meta.env.VITE_API_URL}/api/deletetask/${taskId}`, {
       method: 'DELETE',
     }).catch((err) => {
       console.error('Failed to delete task:', err);

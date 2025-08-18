@@ -42,7 +42,7 @@ export default function ProfileEdit() {
     if (!userId) return;
     (async () => {
       try {
-        const res = await fetch(`http://localhost:5000/api/auth/profile/${userId}`, {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/profile/${userId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         if (!res.ok) return; // ignore silently
@@ -81,7 +81,7 @@ export default function ProfileEdit() {
     try {
       // 1) Update profile details (fullName)
       const imageBase64 = image ? await fileToBase64(image) : undefined;
-      const profileRes = await fetch(`http://localhost:5000/api/auth/profile/${userId}`, {
+      const profileRes = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/profile/${userId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -95,7 +95,7 @@ export default function ProfileEdit() {
       }
 
       // 2) Change password
-      const pwRes = await fetch(`http://localhost:5000/api/auth/resetpassword/${userId}`, {
+      const pwRes = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/resetpassword/${userId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
